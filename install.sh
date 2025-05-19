@@ -4,9 +4,10 @@ source $DURS/virtu/env
 
 ### ADMINISTRATOR
 
-cryptsetup luksFormat /dev/$DISK_KEYS &
-
+cryptsetup luksFormat /dev/$DISK_KEYS
 exit
+
+
 cryptsetup luksFormat /dev/$DISK_ROOT &
 pid=$!
 wait $pid
