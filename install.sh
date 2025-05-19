@@ -1,6 +1,6 @@
 #!/bin/bash
-
-source ./evn
+PATH=$(pwd)
+source $PATH/evn
 
 ### ADMINISTRATOR
 
