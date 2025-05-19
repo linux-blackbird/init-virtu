@@ -173,13 +173,13 @@ wait $pid
 cp -fr $DURS/virtu//cfg/* /mnt/
 
 
-cp -f $DURS/virtu/env /mnt/tmp/init
+cp -f $DURS/virtu/env /opt/tmp/init
 
 
 reflector -f 5 -c id --save /etc/pacman.d/mirrorlist
 
 
-arch-chroot /mnt /bin/bash /tmp/init/main;
+arch-chroot /mnt /bin/bash /opt/init/main;
 
 #umount -R /mnt
 
