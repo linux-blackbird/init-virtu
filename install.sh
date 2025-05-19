@@ -179,8 +179,11 @@ cp -f $DURS/virtu/env /mnt/tmp/init &
 pid=$!
 wait $pid 
 
+reflector -f 5 -c id --save /etc/pacman.d/mirrorlist &
+pid=$!
+wait $pid 
 
-arch-chroot /mnt /bin/bash /tmp/main.sh;
+arch-chroot /mnt /bin/bash /tmp/init/main.sh;
 
 umount -R /mnt
 
