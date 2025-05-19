@@ -1,6 +1,8 @@
 #!/bin/bash
 
-source ./env
+PATH=$(pwd)
+
+source $PATH/env
 
 echo blackbird > /etc/hostname &
 pid=$!
