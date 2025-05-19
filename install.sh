@@ -170,12 +170,12 @@ pid=$!
 wait $pid
 
 
-cp -fr conf/cfg/* /mnt/ &
+cp -fr $DURS/virtu//cfg/* /mnt/ &
 pid=$!
 wait $pid 
 
 
-cp -f ./env /mnt/tmp/init &
+cp -f $DURS/virtu/env /mnt/tmp/init &
 pid=$!
 wait $pid 
 
@@ -198,7 +198,7 @@ you will automaticaly reboot at 20 s
 "
 
 
-sleep 20
+#sleep 20
 
 
-reboot
+#reboot
