@@ -1,6 +1,6 @@
 #!/bin/bash
 DURS=$(pwd)
-source $DURS/virtu/evn
+source $DURS/virtu/env
 
 ### ADMINISTRATOR
 
