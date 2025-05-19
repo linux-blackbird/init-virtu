@@ -117,7 +117,7 @@ mount /dev/proc/root /mnt/ &
 pid=$!
 wait $pid
 
-mkdir /mnt/boot && mount -o uid=0,gid=0,fmask=0077,dmask=0077 /dev/nvme0n1p1 /mnt/boot &
+mkdir /mnt/boot && mount -o uid=0,gid=0,fmask=0077,dmask=0077 /dev/$DISK_BOOT /mnt/boot &
 pid=$!
 wait $pid
 
