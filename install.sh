@@ -16,7 +16,7 @@ cryptsetup luksFormat /dev/$DISK_DATA
 cryptsetup luksOpen /dev/$DISK_KEYS lvm_keys
 
 
-yes | mkfs.ext4 -L KEYS /dev/mapper/lvm_keys &
+mkfs.ext4 -L KEYS /dev/mapper/lvm_keys &
 pid=$!
 wait $pid 
 
