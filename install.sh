@@ -174,7 +174,7 @@ pid=$!
 wait $pid
 
 
-cp -fr $DURS/virtu//cfg/* /mnt/
+cp -fr $DURS/virtu//cfg/* /mnt/`
 
 
 cp -f $DURS/virtu/env /mnt/init
