@@ -4,14 +4,14 @@ source $DURS/virtu/env
 
 ### ADMINISTRATOR
 
-enc1=$( cryptsetup luksFormat /dev/$DISK_KEYS )
-wait $enc1;
+cryptsetup luksFormat /dev/$DISK_KEYS
 
-enc2=$(cryptsetup luksFormat /dev/$DISK_ROOT )
-wait $enc2;
 
-enc3=$(cryptsetup luksFormat /dev/$DISK_DATA )
-wait $enc3
+cryptsetup luksFormat /dev/$DISK_ROOT
+
+
+cryptsetup luksFormat /dev/$DISK_DATA
+
 
 
 exit;
