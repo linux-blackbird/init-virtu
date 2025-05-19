@@ -13,24 +13,18 @@ cryptsetup luksFormat /dev/$DISK_ROOT
 cryptsetup luksFormat /dev/$DISK_DATA
 
 
+cryptsetup luksOpen /dev/$DISK_KEYS lvm_keys &
 
-exit;
-
-cryptsetup luksOpen /dev/$DISK_BOOT lvm_keys &
-pid=$!
-wait $pid
 
 yes | mkfs.ext4 -L KEYS /dev/mapper/lvm_keys &
 pid=$!
 wait $pid 
 
-cryptsetup luksOpen /dev/$DISK_ROOT lvm_root &
-pid=$!
-wait $pid
 
-cryptsetup luksOpen /dev/$DISK_DATA lvm_data &
-pid=$!
-wait $pid
+cryptsetup luksOpen /dev/$DISK_ROOT lvm_root
+
+
+cryptsetup luksOpen /dev/$DISK_DATA lvm_data 
 
 
 ### TECHNICAL
