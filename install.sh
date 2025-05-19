@@ -5,8 +5,8 @@ source $DURS/evn
 ### ADMINISTRATOR
 
 cryptsetup luksFormat /dev/$DISK_KEYS &
-pid=$!
-wait $pid
+pid1=$!
+wait $pid1
 
 cryptsetup luksFormat /dev/$DISK_ROOT &
 pid=$!
