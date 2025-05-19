@@ -55,22 +55,6 @@ unset TERMCAP
 unset MANPATH
 
 
-## sharing directory
-if [ ! -d /tmp/share ]; then
-	mkdir /tmp/share
-    chown share:share /tmp/share
-fi
-ln -sf /tmp/share $HOME/share
-
-
-## download directory
-if [ ! -d /tmp/download ]; then
-	mkdir /tmp/download
-fi
-ln -sf /tmp/download $HOME/download
-
-
-
 function update() {
     reflector --save /etc/pacman.d/mirrorlist --counrty Indonesia,Singapore --protocol https --latest 5 &&
     pacman -Syu &&
