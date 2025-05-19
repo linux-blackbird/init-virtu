@@ -181,7 +181,7 @@ reflector -f 5 -c id --save /etc/pacman.d/mirrorlist
 
 arch-chroot /mnt /bin/bash /opt/init/main;
 
-#umount -R /mnt
+
 
 echo "
 Do not forget to activate this command bellow after reboot
@@ -195,9 +195,10 @@ systemctl restart systemd-resolved
 
 you will automaticaly reboot at 20 s 
 "
-
-
 #sleep 20
 
+#rm -fr /mnt/opt/init
+
+#umount -R /mnt
 
 #reboot
