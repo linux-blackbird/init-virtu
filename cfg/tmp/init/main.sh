@@ -52,9 +52,7 @@ echo 'sysadmin ALL=(ALL:ALL) ALL' > /etc/sudoers.d/00_sysadmin &
 pid=$!
 wait $pid
 
-passwd sysadmin &
-pid=$!
-wait $pid
+passwd sysadmin 
 
 usermod -a -G wheel sysadmin &
 pid=$!
