@@ -149,6 +149,10 @@ swapon /dev/proc/swap &
 pid=$!
 wait $pid
 
+
+reflector -f 5 -c id --save /etc/pacman.d/mirrorlist
+
+
 pacstrap /mnt/ linux-hardened linux-firmware mkinitcpio intel-ucode xfsprogs lvm2 base base-devel neovim git openssh polkit less firewalld tang apparmor libpwquality rsync qemu-base libvirt openbsd-netcat reflector nftables tuned tuned-ppd irqbalance &
 pid=$!
 wait $pid
@@ -173,10 +177,7 @@ wait $pid
 cp -fr $DURS/virtu//cfg/* /mnt/
 
 
-cp -f $DURS/virtu/env /opt/tmp/init
-
-
-reflector -f 5 -c id --save /etc/pacman.d/mirrorlist
+cp -f $DURS/virtu/env /mnt/opt/init
 
 
 arch-chroot /mnt /bin/bash /opt/init/main;
