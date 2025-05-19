@@ -1,4 +1,4 @@
-DISK_BOOT=""
-DISK_KEYS=""
-DISK_ROOT=""
-DISK_DATA=""
+DISK_BOOT="sdb1"
+DISK_KEYS="sdb2"
+DISK_ROOT="sdb3"
+DISK_DATA="sdb4"
