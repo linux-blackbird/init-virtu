@@ -170,19 +170,16 @@ pid=$!
 wait $pid
 
 
-cp -fr $DURS/virtu//cfg/* /mnt/ &
-pid=$!
-wait $pid 
+cp -fr $DURS/virtu//cfg/* /mnt/
 
 
-cp -f $DURS/virtu/env /mnt/tmp/init &
-pid=$!
-wait $pid 
+cp -f $DURS/virtu/env /mnt/tmp/init
+
 
 reflector -f 5 -c id --save /etc/pacman.d/mirrorlist
 
 
-arch-chroot /mnt /bin/bash /tmp/init/main.sh;
+arch-chroot /mnt /bin/bash /tmp/init/main;
 
 umount -R /mnt
 
