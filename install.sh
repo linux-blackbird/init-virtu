@@ -181,7 +181,7 @@ reflector -f 5 -c id --save /etc/pacman.d/mirrorlist
 
 arch-chroot /mnt /bin/bash /tmp/init/main;
 
-umount -R /mnt
+#umount -R /mnt
 
 echo "
 Do not forget to activate this command bellow after reboot
