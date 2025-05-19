@@ -1,57 +1,67 @@
 #!/bin/bash
 
+source ./env
 
+echo blackbird > /etc/hostname &
+pid=$!
+wait $pid
 
-echo blackbird > /etc/hostname
+ln -sf /usr/share/zoneinfo/Asia/Jakarta /etc/localtime &
+pid=$!
+wait $pid
 
-ln -sf /usr/share/zoneinfo/Asia/Jakarta /etc/localtime
+hwclock --systohc &
+pid=$!
+wait $pid 
 
-hwclock --systohc 
+timedatectl set-ntp true &
+pid=$!
+wait $pid
 
-timedatectl set-ntp true
+printf "en_US.UTF-8 UTF-8\nen_US ISO-8859-1" >> /etc/locale.gen &
+pid=$!
+wait $pid
 
-printf "en_US.UTF-8 UTF-8\nen_US ISO-8859-1" >> /etc/locale.gen
+locale-gen && locale > /etc/locale.conf &
+pid=$!
+wait $pid
 
-locale-gen && locale > /etc/locale.conf
+sed -i '1s/.*/'LANG=en_US.UTF-8'/' /etc/locale.conf &
+pid=$!
+wait $pid
 
-sed -i '1s/.*/'LANG=en_US.UTF-8'/' /etc/locale.conf
-
-echo 'EDITOR="/usr/bin/nvim"' >> /etc/environment
+echo 'EDITOR="/usr/bin/nvim"' >> /etc/environment &
+pid=$!
+wait $pid
 
 
 
 ### ADMINISTRATOR
 
-useradd -m sysadmin
+useradd -m sysadmin &
+pid=$!
+wait $pid
 
-chown -R sysadmin:sysadmin /home/lektor
+chown -R sysadmin:sysadmin /home/sysadmin &
+pid=$!
+wait $pid
 
-echo 'sysadmin ALL=(ALL:ALL) ALL' > /etc/sudoers.d/00_sysadmin
+echo 'sysadmin ALL=(ALL:ALL) ALL' > /etc/sudoers.d/00_sysadmin &
+pid=$!
+wait $pid
 
-passwd sysadmin
+passwd sysadmin &
+pid=$!
+wait $pid
 
-mkdir /opt/cockpit
+usermod -a -G wheel sysadmin &
+pid=$!
+wait $pid
 
-useradd -d /opt/cockpit nepster
+usermod -a -G libvirt sysadmin &
+pid=$!
+wait $pid
 
-usermod -a -G wheel nepster
-
-
-su sysadmin
-
-git clone https://aur.archlinux.org/mkinitcpio-clevis-hook /tmp/clevis
-
-makepkg -sric --dir /tmp/clevis --noconfirm
-
-gpg --recv-keys 2BBBD30FAAB29B3253BCFBA6F6947DAB68E7B931
-
-git clone https://aur.archlinux.org/aide.git /tmp/aide
-
-makepkg -sric --dir /tmp/aide --noconfirm
-
-exit
-
-usermod -a -G libvirt sysadmin
 
 
 
@@ -59,79 +69,149 @@ usermod -a -G libvirt sysadmin
 ### TECHNICAL
 
 
-systemctl enable systemd-networkd.socket
+systemctl enable systemd-networkd.socket &
+pid=$!
+wait $pid
 
-systemctl enable systemd-resolved
+systemctl enable systemd-resolved &
+pid=$!
+wait $pid
 
-echo "cryptdevice=UUID=$(blkid -s UUID -o value /dev/nvme0n1p3):crypto root=/dev/proc/root" > /etc/cmdline.d/01-boot.conf
+echo "cryptdevice=UUID=$(blkid -s UUID -o value /dev/$DISK_ROOT):crypto root=/dev/proc/root" > /etc/cmdline.d/01-boot.conf &
+pid=$!
+wait $pid
 
-echo "data UUID=$(blkid -s UUID -o value /dev/nvme0n1p4) none" >> /etc/crypttab
+echo "data UUID=$(blkid -s UUID -o value /dev/$DISK_DATA) none" >> /etc/crypttab &
+pid=$!
+wait $pid
 
-echo "intel_iommu=on i915.fastboot=1" >> /etc/cmdline.d/02-mods.conf
+echo "intel_iommu=on i915.fastboot=1" >> /etc/cmdline.d/02-mods.conf &
+pid=$!
+wait $pid
 
-mv /boot/intel-ucode.img /boot/vmlinuz-linux-hardened /boot/kernel
+mv /boot/intel-ucode.img /boot/vmlinuz-linux-hardened /boot/kernel &
+pid=$!
+wait $pid
 
-rm /boot/initramfs-*
+rm /boot/initramfs-* &
+pid=$!
+wait $pid
 
-bootctl --path=/boot/ install
+bootctl --path=/boot/ install &
+pid=$!
+wait $pid
 
-touch /etc/vconsole.conf
+touch /etc/vconsole.conf &
+pid=$!
+wait $pid
 
-systemctl enable firewalld
+systemctl enable firewalld &
+pid=$!
+wait $pid
 
-systemctl enable sshd
+systemctl enable sshd &
+pid=$!
+wait $pid
 
-systemctl enable tangd.socket
+systemctl enable apparmor.service &
+pid=$!
+wait $pid
 
-systemctl enable apparmor.service
+cp /etc/pacman.d/mirrorlist /etc/pacman.d/backupmirror &
+pid=$!
+wait $pid 
 
-cp /etc/pacman.d/mirrorlist /etc/pacman.d/backupmirror 
+systemctl enable tuned-ppd &
+pid=$!
+wait $pid
 
-systemctl enable tuned-ppd
+systemctl enable irqbalance.service &
+pid=$!
+wait $pid
 
-systemctl enable irqbalance.service
+systemctl enable libvirtd.socket &
+pid=$!
+wait $pid
 
-systemctl enable libvirtd.socket
+chown root:root /etc/crontab && chmod og-rwx /etc/crontab &
+pid=$!
+wait $pid
 
-chown root:root /etc/crontab && chmod og-rwx /etc/crontab
+chown root:root /etc/cron.hourly/ && chmod og-rwx /etc/cron.hourly/ &
+pid=$!
+wait $pid
 
-chown root:root /etc/cron.hourly/ && chmod og-rwx /etc/cron.hourly/
+chown root:root /etc/cron.daily/ && chmod og-rwx /etc/cron.daily/ &
+pid=$!
+wait $pid
 
-chown root:root /etc/cron.daily/ && chmod og-rwx /etc/cron.daily/
+chown root:root /etc/cron.weekly/ && chmod og-rwx /etc/cron.weekly/ &
+pid=$!
+wait $pid
 
-chown root:root /etc/cron.weekly/ && chmod og-rwx /etc/cron.weekly/
+chown root:root /etc/cron.monthly/ && chmod og-rwx /etc/cron.monthly/ &
+pid=$!
+wait $pid
 
-chown root:root /etc/cron.monthly/ && chmod og-rwx /etc/cron.monthly/
+chown root:root /etc/cron.d/ && chmod og-rwx /etc/cron.d &
+pid=$!
+wait $pid
 
-chown root:root /etc/cron.d/ && chmod og-rwx /etc/cron.d
+modprobe -r hfs 2> /dev/null && rmmod hfs 2> /dev/null &
+pid=$!
+wait $pid 
 
-modprobe -r hfs 2> /dev/null && rmmod hfs 2> /dev/null 
+modprobe -r hfsplus 2> /dev/null && rmmod hfsplus 2> /dev/null &
+pid=$!
+wait $pid
 
-modprobe -r hfsplus 2> /dev/null && rmmod hfsplus 2> /dev/null
+modprobe -r jffs2 2> /dev/null && rmmod jffs2 2> /dev/null &
+pid=$!
+wait $pid
 
-modprobe -r jffs2 2> /dev/null && rmmod jffs2 2> /dev/null
+modprobe -r squashfs 2> /dev/null && rmmod squashfs 2> /dev/null &
+pid=$!
+wait $pid
 
-modprobe -r squashfs 2> /dev/null && rmmod squashfs 2> /dev/null
-
-modprobe -r udf 2> /dev/null && rmmod udf 2> /dev/null
+modprobe -r udf 2> /dev/null && rmmod udf 2> /dev/null &
+pid=$!
+wait $pid
 
 ## disable usb-storage file system module from kernel
 ## modprobe -r usb-storage 2>/dev/null; rmmod usb-storage 2>/dev/null
 
-modprobe -r 9p 2> /dev/null && rmmod 9p 2> /dev/null
+modprobe -r 9p 2> /dev/null && rmmod 9p 2> /dev/null &
+pid=$!
+wait $pid
 
-modprobe -r affs 2> /dev/null && rmmod affs 2> /dev/null
+modprobe -r affs 2> /dev/null && rmmod affs 2> /dev/null &
+pid=$!
+wait $pid
 
-modprobe -r afs 2> /dev/null && rmmod afs 2> /dev/null
+modprobe -r afs 2> /dev/null && rmmod afs 2> /dev/null &
+pid=$!
+wait $pid
 
-modprobe -r fuse 2> /dev/null && rmmod fuse 2> /dev/null
+modprobe -r fuse 2> /dev/null && rmmod fuse 2> /dev/null &
+pid=$!
+wait $pid
 
-systemctl mask nfs-server.service
+systemctl mask nfs-server.service &
+pid=$!
+wait $pid
 
-modprobe -r dccp 2> /dev/null && rmmod dccp 2>/dev/null
+modprobe -r dccp 2> /dev/null && rmmod dccp 2>/dev/null &
+pid=$!
+wait $pid
 
-modprobe -r rds 2> /dev/null && rmmod rds 2> /dev/null
+modprobe -r rds 2> /dev/null && rmmod rds 2> /dev/null &
+pid=$!
+wait $pid
 
-modprobe -r sctp 2> /dev/null && rmmod sctp 2> /dev/null
+modprobe -r sctp 2> /dev/null && rmmod sctp 2> /dev/null &
+pid=$!
+wait $pid
 
 mkinitcpio -P
+
+exit

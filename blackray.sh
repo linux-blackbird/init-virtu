@@ -1,106 +1,194 @@
 #!/bin/bash
 
+source ./evn
+
 ### ADMINISTRATOR
 
-cryptsetup luksFormat /dev/nvme0n1p2
+cryptsetup luksFormat /dev/$DISK_KEYS &
+pid=$!
+wait $pid
 
-cryptsetup luksFormat /dev/nvme0n1p3
+cryptsetup luksFormat /dev/$DISK_ROOT &
+pid=$!
+wait $pid
 
-cryptsetup luksFormat /dev/nvme0n1p4
+cryptsetup luksFormat /dev/$DISK_DATA &
+pid=$!
+wait $pid
 
-cryptsetup luksOpen /dev/nvme0n1p2 lvm_keys
+cryptsetup luksOpen /dev/$DISK_BOOT lvm_keys &
+pid=$!
+wait $pid
 
-yes | mkfs.ext4 -L KEYS /dev/mapper/lvm_keys 
+yes | mkfs.ext4 -L KEYS /dev/mapper/lvm_keys &
+pid=$!
+wait $pid 
 
-cryptsetup luksOpen /dev/nvme0n1p3 lvm_root
+cryptsetup luksOpen /dev/$DISK_ROOT lvm_root &
+pid=$!
+wait $pid
 
-cryptsetup luksOpen /dev/nvme0n1p4 lvm_data
+cryptsetup luksOpen /dev/$DISK_DATA lvm_data &
+pid=$!
+wait $pid
 
 
 ### TECHNICAL
 
-pvcreate /dev/mapper/lvm_root
+pvcreate /dev/mapper/lvm_root &
+pid=$!
+wait $pid
 
-vgcreate proc /dev/mapper/lvm_root
+vgcreate proc /dev/mapper/lvm_root &
+pid=$!
+wait $pid
 
-yes | lvcreate -L 10G proc -n root
+yes | lvcreate -L 10G proc -n root &
+pid=$!
+wait $pid
 
-yes | lvcreate -L 5G proc -n vars
+yes | lvcreate -L 5G proc -n vars &
+pid=$!
+wait $pid
 
-yes | lvcreate -L 1.5G proc -n vtmp
+yes | lvcreate -L 1.5G proc -n vtmp &
+pid=$!
+wait $pid
 
-yes | lvcreate -L 5G proc -n vlog
+yes | lvcreate -L 5G proc -n vlog &
+pid=$!
+wait $pid
 
-yes | lvcreate -L 2.5G proc -n vaud
+yes | lvcreate -L 2.5G proc -n vaud &
+pid=$!
+wait $pid
 
-yes | lvcreate -l100%FREE proc -n swap
+yes | lvcreate -l100%FREE proc -n swap &
+pid=$!
+wait $pid
 
-pvcreate /dev/mapper/lvm_data
+pvcreate /dev/mapper/lvm_data &
+pid=$!
+wait $pid
 
-vgcreate data /dev/mapper/lvm_data
+vgcreate data /dev/mapper/lvm_data &
+pid=$!
+wait $pid
 
-yes | lvcreate -L 5G data -n home
+yes | lvcreate -L 5G data -n home &
+pid=$!
+wait $pid
 
-yes | lvcreate -l100%FREE data -n host
+yes | lvcreate -l100%FREE data -n host &
+pid=$!
+wait $pid
 
-yes | mkfs.vfat -F32 -S 4096 -n BOOT /dev/nvme0n1p1
+yes | mkfs.vfat -F32 -S 4096 -n BOOT /dev/$DISK_BOOT &
+pid=$!
+wait $pid
 
-yes | mkfs.ext4 -b 4096 /dev/data/home
+yes | mkfs.ext4 -b 4096 /dev/data/home &
+pid=$!
+wait $pid
 
-mkfs.xfs -fs size=4096 /dev/data/host
+mkfs.xfs -fs size=4096 /dev/data/host &
+pid=$!
+wait $pid
 
-yes | mkfs.ext4 -b 4096 /dev/proc/root
+yes | mkfs.ext4 -b 4096 /dev/proc/root &
+pid=$!
+wait $pid
 
-yes | mkfs.ext4 -b 4096 /dev/proc/vars
+yes | mkfs.ext4 -b 4096 /dev/proc/vars &
+pid=$!
+wait $pid
 
-yes | mkfs.ext4 -b 4096 /dev/proc/vtmp
+yes | mkfs.ext4 -b 4096 /dev/proc/vtmp &
+pid=$!
+wait $pid
+ 
+yes | mkfs.ext4 -b 4096 /dev/proc/vlog &
+pid=$!
+wait $pid
 
-yes | mkfs.ext4 -b 4096 /dev/proc/vlog
+yes | mkfs.ext4 -b 4096 /dev/proc/vaud &
+pid=$!
+wait $pid
 
-yes | mkfs.ext4 -b 4096 /dev/proc/vaud
+yes | mkswap /dev/proc/swap &
+pid=$!
+wait $pid
 
-yes | mkswap /dev/proc/swap
+mount /dev/proc/root /mnt/ &
+pid=$!
+wait $pid
 
-mount /dev/proc/root /mnt/
+mkdir /mnt/boot && mount -o uid=0,gid=0,fmask=0077,dmask=0077 /dev/nvme0n1p1 /mnt/boot &
+pid=$!
+wait $pid
 
-mkdir /mnt/boot && mount -o uid=0,gid=0,fmask=0077,dmask=0077 /dev/nvme0n1p1 /mnt/boot
+mkdir /mnt/var && mount -o defaults,rw,nosuid,nodev,noexec,relatime /dev/proc/vars /mnt/var &
+pid=$!
+wait $pid
 
-mkdir /mnt/var && mount -o defaults,rw,nosuid,nodev,noexec,relatime /dev/proc/vars /mnt/var
+mkdir /mnt/var/tmp && mount -o rw,nosuid,nodev,noexec,relatime /dev/proc/vtmp /mnt/var/tmp &
+pid=$!
+wait $pid
 
-mkdir /mnt/var/tmp && mount -o rw,nosuid,nodev,noexec,relatime /dev/proc/vtmp /mnt/var/tmp
+mkdir /mnt/var/log && mount -o rw,nosuid,nodev,noexec,relatime /dev/proc/vlog /mnt/var/log &
+pid=$!
+wait $pid
 
-mkdir /mnt/var/log && mount -o rw,nosuid,nodev,noexec,relatime /dev/proc/vlog /mnt/var/log
+mkdir /mnt/var/log/audit && mount -o rw,nosuid,nodev,noexec,relatime /dev/proc/vaud /mnt/var/log/audit &
+pid=$!
+wait $pid
 
-mkdir /mnt/var/log/audit && mount -o rw,nosuid,nodev,noexec,relatime /dev/proc/vaud /mnt/var/log/audit
+mkdir /mnt/home && mount -o rw,nosuid,nodev,noexec,relatime /dev/data/home /mnt/home &
+pid=$!
+wait $pid 
 
-mkdir /mnt/home && mount -o rw,nosuid,nodev,noexec,relatime /dev/data/home /mnt/home 
+mkdir /mnt/var/lib /mnt/var/lib/libvirt /mnt/var/lib/libvirt/images && mount /dev/data/host /mnt/var/lib/libvirt/images & 
+pid=$!
+wait $pid
 
-mkdir /mnt/var/lib /mnt/var/lib/libvirt /mnt/var/lib/libvirt/images && mount /dev/data/host /mnt/var/lib/libvirt/images 
+swapon /dev/proc/swap &
+pid=$!
+wait $pid
 
-swapon /dev/proc/swap
+pacstrap /mnt/ linux-hardened linux-firmware mkinitcpio intel-ucode xfsprogs lvm2 base base-devel neovim git openssh polkit less firewalld tang apparmor libpwquality rsync qemu-base libvirt openbsd-netcat reflector nftables tuned tuned-ppd irqbalance &
+pid=$!
+wait $pid
 
-pacstrap /mnt/ linux-hardened linux-firmware mkinitcpio intel-ucode xfsprogs lvm2 base base-devel neovim git openssh polkit less firewalld tang apparmor libpwquality rsync qemu-base libvirt openbsd-netcat reflector nftables tuned tuned-ppd irqbalance
+genfstab -U /mnt/ > /mnt/etc/fstab &
+pid=$!
+wait $pid 
 
-genfstab -U /mnt/ > /mnt/etc/fstab 
+cp /etc/systemd/network/* /mnt/etc/systemd/network/ &
+pid=$!
+wait $pid
 
-cp /etc/systemd/network/* /mnt/etc/systemd/network/
+echo 'tmpfs     /tmp        tmpfs   defaults,rw,nosuid,nodev,noexec,relatime,size=1G    0 0' >> /mnt/etc/fstab &
+pid=$!
+wait $pid
 
-echo 'tmpfs     /tmp        tmpfs   defaults,rw,nosuid,nodev,noexec,relatime,size=1G    0 0' >> /mnt/etc/fstab
+echo 'tmpfs     /dev/shm    tmpfs   defaults,rw,nosuid,nodev,noexec,relatime,size=1G    0 0' >> /mnt/etc/fstab &
+pid=$!
+wait $pid
 
-echo 'tmpfs     /dev/shm    tmpfs   defaults,rw,nosuid,nodev,noexec,relatime,size=1G    0 0' >> /mnt/etc/fstab
 
-pacman -Syy git --noconfirm
+cp -fr conf/cfg/* /mnt/ &
+pid=$!
+wait $pid 
 
-git clone https://github.com/linux-blackbird/virtu
 
-cp -fr conf/cfg/* /mnt/ 
+cp -f ./env /mnt/tmp/init &
+pid=$!
+wait $pid 
+
 
 arch-chroot /mnt /bin/bash /tmp/main.sh;
 
-
-
-exit
-
+umount -R /mnt
 
 echo "
 Do not forget to activate this command bellow after reboot
@@ -117,6 +205,6 @@ you will automaticaly reboot at 20 s
 
 
 sleep 20
-umount -R /mnt
+
 
 reboot
