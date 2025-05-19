@@ -1,11 +1,9 @@
 #!/bin/bash
 
-PATH=$(pwd)
 
-source /opt/init/env
+source /init/env
 
 echo blackbird > /etc/hostname
-
 
 ln -sf /usr/share/zoneinfo/Asia/Jakarta /etc/localtime 
 

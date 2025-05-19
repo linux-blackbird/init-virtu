@@ -177,10 +177,10 @@ wait $pid
 cp -fr $DURS/virtu//cfg/* /mnt/
 
 
-cp -f $DURS/virtu/env /mnt/opt/init
+cp -f $DURS/virtu/env /mnt/init
 
 
-arch-chroot /mnt /bin/bash /opt/init/main;
+arch-chroot /mnt /bin/bash /init/main;
 
 
 
