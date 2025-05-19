@@ -2,65 +2,40 @@
 
 PATH=$(pwd)
 
-source $PATH/env
+source /opt/init/env
 
-echo blackbird > /etc/hostname &
-pid=$!
-wait $pid
+echo blackbird > /etc/hostname
 
-ln -sf /usr/share/zoneinfo/Asia/Jakarta /etc/localtime &
-pid=$!
-wait $pid
 
-hwclock --systohc &
-pid=$!
-wait $pid 
+ln -sf /usr/share/zoneinfo/Asia/Jakarta /etc/localtime 
 
-timedatectl set-ntp true &
-pid=$!
-wait $pid
+hwclock --systohc 
 
-printf "en_US.UTF-8 UTF-8\nen_US ISO-8859-1" >> /etc/locale.gen &
-pid=$!
-wait $pid
+timedatectl set-ntp true 
 
-locale-gen && locale > /etc/locale.conf &
-pid=$!
-wait $pid
+printf "en_US.UTF-8 UTF-8\nen_US ISO-8859-1" >> /etc/locale.gen 
 
-sed -i '1s/.*/'LANG=en_US.UTF-8'/' /etc/locale.conf &
-pid=$!
-wait $pid
+locale-gen && locale > /etc/locale.conf 
 
-echo 'EDITOR="/usr/bin/nvim"' >> /etc/environment &
-pid=$!
-wait $pid
+sed -i '1s/.*/'LANG=en_US.UTF-8'/' /etc/locale.conf 
+
+echo 'EDITOR="/usr/bin/nvim"' >> /etc/environment 
 
 
 
 ### ADMINISTRATOR
 
-useradd -m sysadmin &
-pid=$!
-wait $pid
+useradd -m sysadmin 
 
-chown -R sysadmin:sysadmin /home/sysadmin &
-pid=$!
-wait $pid
+chown -R sysadmin:sysadmin /home/sysadmin 
 
-echo 'sysadmin ALL=(ALL:ALL) ALL' > /etc/sudoers.d/00_sysadmin &
-pid=$!
-wait $pid
+echo 'sysadmin ALL=(ALL:ALL) ALL' > /etc/sudoers.d/00_sysadmin 
 
 passwd sysadmin 
 
-usermod -a -G wheel sysadmin &
-pid=$!
-wait $pid
+usermod -a -G wheel sysadmin 
 
-usermod -a -G libvirt sysadmin &
-pid=$!
-wait $pid
+usermod -a -G libvirt sysadmin 
 
 
 
@@ -69,69 +44,37 @@ wait $pid
 ### TECHNICAL
 
 
-systemctl enable systemd-networkd.socket &
-pid=$!
-wait $pid
+systemctl enable systemd-networkd.socket 
 
-systemctl enable systemd-resolved &
-pid=$!
-wait $pid
+systemctl enable systemd-resolved 
 
-echo "cryptdevice=UUID=$(blkid -s UUID -o value /dev/$DISK_ROOT):crypto root=/dev/proc/root" > /etc/cmdline.d/01-boot.conf &
-pid=$!
-wait $pid
+echo "cryptdevice=UUID=$(blkid -s UUID -o value /dev/$DISK_ROOT):crypto root=/dev/proc/root" > /etc/cmdline.d/01-boot.conf 
 
-echo "data UUID=$(blkid -s UUID -o value /dev/$DISK_DATA) none" >> /etc/crypttab &
-pid=$!
-wait $pid
+echo "data UUID=$(blkid -s UUID -o value /dev/$DISK_DATA) none" >> /etc/crypttab 
 
-echo "intel_iommu=on i915.fastboot=1" >> /etc/cmdline.d/02-mods.conf &
-pid=$!
-wait $pid
+echo "intel_iommu=on i915.fastboot=1" >> /etc/cmdline.d/02-mods.conf 
 
-mv /boot/intel-ucode.img /boot/vmlinuz-linux-hardened /boot/kernel &
-pid=$!
-wait $pid
+mv /boot/intel-ucode.img /boot/vmlinuz-linux-hardened /boot/kernel 
 
-rm /boot/initramfs-* &
-pid=$!
-wait $pid
+rm /boot/initramfs-* 
 
-bootctl --path=/boot/ install &
-pid=$!
-wait $pid
+bootctl --path=/boot/ install 
 
-touch /etc/vconsole.conf &
-pid=$!
-wait $pid
+touch /etc/vconsole.conf 
 
-systemctl enable firewalld &
-pid=$!
-wait $pid
+systemctl enable firewalld 
 
-systemctl enable sshd &
-pid=$!
-wait $pid
+systemctl enable sshd 
 
-systemctl enable apparmor.service &
-pid=$!
-wait $pid
+systemctl enable apparmor.service 
 
-cp /etc/pacman.d/mirrorlist /etc/pacman.d/backupmirror &
-pid=$!
-wait $pid 
+cp /etc/pacman.d/mirrorlist /etc/pacman.d/backupmirror 
 
-systemctl enable tuned-ppd &
-pid=$!
-wait $pid
+systemctl enable tuned-ppd 
 
-systemctl enable irqbalance.service &
-pid=$!
-wait $pid
+systemctl enable irqbalance.service 
 
-systemctl enable libvirtd.socket &
-pid=$!
-wait $pid
+systemctl enable libvirtd.socket 
 
 chown root:root /etc/crontab && chmod og-rwx /etc/crontab &
 pid=$!
