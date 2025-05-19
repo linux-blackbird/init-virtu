@@ -4,17 +4,17 @@ source $DURS/virtu/env
 
 ### ADMINISTRATOR
 
-cryptsetup luksFormat /dev/$DISK_KEYS
-exit
+enc1=$( cryptsetup luksFormat /dev/$DISK_KEYS )
+wait $enc1;
+
+enc2=$(cryptsetup luksFormat /dev/$DISK_ROOT )
+wait $enc2;
+
+enc3=$(cryptsetup luksFormat /dev/$DISK_DATA )
+wait $enc3
 
 
-cryptsetup luksFormat /dev/$DISK_ROOT &
-pid=$!
-wait $pid
-
-cryptsetup luksFormat /dev/$DISK_DATA &
-pid=$!
-wait $pid
+exit;
 
 cryptsetup luksOpen /dev/$DISK_BOOT lvm_keys &
 pid=$!
